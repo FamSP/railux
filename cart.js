@@ -12,15 +12,15 @@ const cart = getCart();
 
 document.querySelectorAll(".add-to-cart").forEach((button) => {
   button.addEventListener("click", () => {
-      const productId = button.getAttribute("data-product-id");
-      const price = parseFloat(button.getAttribute("data-price"));
-      
-      if (!cart[productId]) {
-          cart[productId] = { quantity: 1, price: price };
-      } else {
-          cart[productId].quantity++;
-      }
-      saveCart(cart);
+    const productId = button.getAttribute("data-product-id");
+    const price = parseFloat(button.getAttribute("data-price"));
+
+    if (!cart[productId]) {
+      cart[productId] = { quantity: 1, price: price };
+    } else {
+      cart[productId].quantity++;
+    }
+    saveCart(cart);
   });
 });
 
@@ -35,9 +35,9 @@ function updateCartDisplay() {
   const thead = document.createElement("thead");
   const headerRow = document.createElement("tr");
   ["Product", "Quantity", "Price", "Total", "Actions"].forEach((text) => {
-      const th = document.createElement("th");
-      th.textContent = text;
-      headerRow.appendChild(th);
+    const th = document.createElement("th");
+    th.textContent = text;
+    headerRow.appendChild(th);
   });
   thead.appendChild(headerRow);
   table.appendChild(thead);
@@ -45,29 +45,29 @@ function updateCartDisplay() {
   const tbody = document.createElement("tbody");
 
   for (const productId in cart) {
-      const item = cart[productId];
-      const itemTotalPrice = item.quantity * item.price;
-      totalPrice += itemTotalPrice;
+    const item = cart[productId];
+    const itemTotalPrice = item.quantity * item.price;
+    totalPrice += itemTotalPrice;
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
           <td>${productId}</td>
           <td>${item.quantity}</td>
           <td>฿${item.price}</td>
           <td>฿${itemTotalPrice}</td>
           <td><button class="btn btn-danger" onclick="removeFromCart('${productId}')">ลบ</button></td>
       `;
-      tbody.appendChild(tr);
+    tbody.appendChild(tr);
   }
   table.appendChild(tbody);
   cartElement.appendChild(table);
 
   if (Object.keys(cart).length === 0) {
-      cartElement.innerHTML = "<p>No items in cart.</p>";
+    cartElement.innerHTML = "<p>No items in cart.</p>";
   } else {
-      const totalPriceElement = document.createElement("p");
-      totalPriceElement.textContent = `Total Price: ฿${totalPrice}`;
-      cartElement.appendChild(totalPriceElement);
+    const totalPriceElement = document.createElement("p");
+    totalPriceElement.textContent = `Total Price: ฿${totalPrice}`;
+    cartElement.appendChild(totalPriceElement);
   }
 }
 
@@ -82,23 +82,39 @@ document.getElementById("printCart").addEventListener("click", () => {
 
 function printReceipt(title, content) {
   const printWindow = window.open("", "_blank");
-  printWindow.document.write(`<html><head><title>${title}</title></head><body>${content}</body></html>`);
+  printWindow.document.write(
+    `<html><head><title>${title}</title></head><body>${content}</body></html>`
+  );
+  printWindow.document.close();
+  printWindow.print();
+}
+
+function printReceipt(title, content) {
+  const printWindow = window.open("", "_blank");
+  printWindow.document.write(`<html><head><title>${title}</title><style>
+        @page { size: 100mm 100mm; }
+        body { width: 100mm; height: 100mm; margin: 0; padding: 5px; font-family: Arial, sans-serif; text-align: left; }
+        h2 { margin-bottom: 10px; text-align: left; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        th, td { border: 1px solid #ddd; padding: 5px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style></head><body>${content}</body></html>`);
   printWindow.document.close();
   printWindow.print();
 }
 
 function generateCartReceipt() {
-  let receiptContent = `<h2>Cart Receipt</h2><table><thead><tr><th>Product</th><th>Quantity</th><th>Price</th><th>Total</th></tr></thead><tbody>`;
+  let receiptContent = `<h2 style="text-align: left;">Cart Receipt</h2><table border="1" style="width: 100%; border-collapse: collapse;"><thead><tr><th>Product</th><th>Quantity</th><th>Price</th><th>Total</th></tr></thead><tbody>`;
   let totalPrice = 0;
 
   for (const productId in cart) {
-      const item = cart[productId];
-      const itemTotalPrice = item.quantity * item.price;
-      receiptContent += `<tr><td>${productId}</td><td>${item.quantity}</td><td>฿${item.price}</td><td>฿${itemTotalPrice}</td></tr>`;
-      totalPrice += itemTotalPrice;
+    const item = cart[productId];
+    const itemTotalPrice = item.quantity * item.price;
+    receiptContent += `<tr><td>${productId}</td><td>${item.quantity}</td><td>฿${item.price}</td><td>฿${itemTotalPrice}</td></tr>`;
+    totalPrice += itemTotalPrice;
   }
 
-  receiptContent += `</tbody></table><p>Total ฿${totalPrice}</p>`;
+  receiptContent += `</tbody></table><p style="text-align: left;">Total ฿${totalPrice}</p>`;
   return receiptContent;
 }
 
